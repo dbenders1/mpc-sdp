@@ -1,8 +1,9 @@
 function print_diagnostics(diagnostics)
   fprintf(" => ");
   if diagnostics.problem == 0
-    cprintf([0,1,0], "feasible\n");
+    cprintf([0,1,0], "optimization successful!\n");
   else
-    cprintf([1,0,0], "infeasible (problem code %i)\n",diagnostics.problem);
+    err_msg = yalmiperror(diagnostics.problem);
+    cprintf([1,0,0], "optimization unsuccessful (yalmip error code %i: %s)\n",diagnostics.problem,[lower(err_msg(1)),err_msg(2:end-1)]);
   end
 end
