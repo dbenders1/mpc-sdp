@@ -32,16 +32,20 @@ use_w_rel = true;
 get_grid_options = 0;
 
 % Define mat filenames and store data from input file also in output file
-input_mat_filename = 'falcon_t.mat';
-output_mat_filename = 'offline_design.mat';
-load(input_mat_filename);
+input_mat_filepath = '../../../../../../mpc_model_id_mismatch/data/model_mismatch_results/falcon_t.mat';
+output_mat_filepath = './offline_design.mat';
+if exist(input_mat_filepath, 'file')
+    load(input_mat_filepath);
+else
+    error('File does not exist at the specified path: %s. Ensure that the mpc_id_model_mismatch submodule is cloned', input_mat_filepath);
+end
 if ~use_w_rel
   w_bias = zeros(1,nw);
 end
-save(output_mat_filename);
+save(output_mat_filepath);
 
 % Select model
-model = FalconModelT(input_mat_filename,use_w_rel);
+model = FalconModelT(input_mat_filepath,use_w_rel);
 
 % General optimization settings
 if (sdp_type == "tmpc")
@@ -242,7 +246,7 @@ end
 
 
 %% Save data
-save(output_mat_filename,'sdp_type','model','do_print',...
+save(output_mat_filepath,'sdp_type','model','do_print',...
      'solver_ops','solver_tol','do_check_sol','sol_check_tol',...
      'sys_con_lb','sys_con_ub','sys_con_halfs','min_obs_dist',...
      'rho_c','lambda_delta','delta','epsilon',...
@@ -251,18 +255,18 @@ save(output_mat_filename,'sdp_type','model','do_print',...
      '-append');
 
 if (sdp_type == "rompc")
-  save(output_mat_filename,'L','lambda_epsilon','lambda_delta_epsilon',...
+  save(output_mat_filepath,'L','lambda_epsilon','lambda_delta_epsilon',...
        '-append');
 end
 
 
 %% Merge data from other functions
-save(output_mat_filename,'-struct','data_P_K_cs_co','-append');
+save(output_mat_filepath,'-struct','data_P_K_cs_co','-append');
 if (sdp_type ~= "tmpc")
   % save(output_mat_filename,'-struct','data_L','-append');
-  save(output_mat_filename,'-struct','data_wbarc','-append');
+  save(output_mat_filepath,'-struct','data_wbarc','-append');
   % save(output_mat_filename,'-struct','data_data_epsilon','-append');
-  save(output_mat_filename,'-struct','data_P','-append');
+  save(output_mat_filepath,'-struct','data_P','-append');
 end
-save(output_mat_filename,'-struct','data_mpc','-append');
+save(output_mat_filepath,'-struct','data_mpc','-append');
 
